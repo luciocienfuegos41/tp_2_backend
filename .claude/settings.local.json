@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip3 --version)",
+      "Bash(mysql --version)",
+      "Bash(brew --version)",
+      "Bash(mkdir -p src/partidos)",
+      "Bash(touch app.py config.py src/__init__.py src/partidos/__init__.py src/partidos/routes.py src/partidos/service.py src/partidos/repository.py)"
+    ]
+  }
+}
