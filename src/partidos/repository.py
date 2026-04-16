@@ -44,3 +44,21 @@ def get_partidos(equipo=None, fecha=None, fase=None):
     conn.close()
 
     return partidos
+
+
+def eliminar_partido(partido_id):
+    conn = mysql.connector.connect(**DB_CONFIG)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id FROM partidos WHERE id = %s", (partido_id,))
+    if not cursor.fetchone():
+        cursor.close()
+        conn.close()
+        return False
+
+    cursor.execute("DELETE FROM partidos WHERE id = %s", (partido_id,))
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+    return True

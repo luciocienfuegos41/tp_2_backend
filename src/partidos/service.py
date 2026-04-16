@@ -21,3 +21,10 @@ def crear_partido(data):
 
 def get_partidos(equipo=None, fecha=None, fase=None):
     return repository.get_partidos(equipo=equipo, fecha=fecha, fase=fase)
+
+
+def eliminar_partido(partido_id):
+    eliminado = repository.eliminar_partido(partido_id)
+    if not eliminado:
+        raise ValueError("Partido no encontrado")
+

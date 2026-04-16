@@ -24,3 +24,13 @@ def get_partidos():
 
     partidos = service.get_partidos(equipo=equipo, fecha=fecha, fase=fase)
     return jsonify(partidos), 200
+
+
+@partidos_bp.route("/partidos/<int:partido_id>", methods=["DELETE"])
+def eliminar_partido(partido_id):
+    try:
+        service.eliminar_partido(partido_id)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 404
+
+    return jsonify({"mensaje": "Partido eliminado exitosamente"}), 200
