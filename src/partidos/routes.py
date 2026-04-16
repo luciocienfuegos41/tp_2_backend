@@ -55,3 +55,14 @@ def eliminar_partido(partido_id):
         return jsonify({"error": str(e)}), 404
 
     return jsonify({"mensaje": "Partido eliminado exitosamente"}), 200
+
+@partidos_bp.route('/partidos/<int:id_partido>', methods=['PATCH'])
+def actualizar_datos(id_partido):
+    datos_a_actualizar = request.get_json()
+
+    if not datos_a_actualizar:
+        return jsonify({"error": "No se enviaron los datos para actualizar"}), 400
+    
+    resultado, status_code = actualizar_partido_parcial(id_partidon datos_a_actualizar)
+
+    return jsonify(resultado), status_code
