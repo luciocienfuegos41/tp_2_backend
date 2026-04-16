@@ -20,7 +20,7 @@ def crear_partido(equipo_local, equipo_visitante, estadio, ciudad, fecha, fase):
 
     return nuevo_id
 
-def get_partidos(equipo=None, fecha=None, fase=None):
+def get_partidos(equipo=None, fecha=None, fase=None, limit=10, offset=0):
     conn = mysql.connector.connect(**DB_CONFIG)
     cursor = conn.cursor(dictionary=True)
 
@@ -37,13 +37,21 @@ def get_partidos(equipo=None, fecha=None, fase=None):
         sql += " AND fase = %s"
         params.append(fase)
 
+    count_cursor = conn.cursor()
+    count_cursor.execute("SELECT COUNT(*) FROM (" + sql + ") AS total", params)
+    total = count_cursor.fetchone()[0]
+    count_cursor.close()
+
+    sql += " LIMIT %s OFFSET %s"
+    params.extend([limit, offset])
+
     cursor.execute(sql, params)
     partidos = cursor.fetchall()
 
     cursor.close()
     conn.close()
 
-    return partidos
+    return partidos, total
 
 
 def eliminar_partido(partido_id):

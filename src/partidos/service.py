@@ -19,8 +19,8 @@ def crear_partido(data):
     return nuevo_id
 
 
-def get_partidos(equipo=None, fecha=None, fase=None):
-    return repository.get_partidos(equipo=equipo, fecha=fecha, fase=fase)
+def get_partidos(equipo=None, fecha=None, fase=None, limit=10, offset=0):
+    return repository.get_partidos(equipo=equipo, fecha=fecha, fase=fase, limit=limit, offset=offset)
 
 
 def eliminar_partido(partido_id):
