@@ -17,3 +17,7 @@ def crear_partido(data):
     )
 
     return nuevo_id
+
+
+def get_partidos(equipo=None, fecha=None, fase=None):
+    return repository.get_partidos(equipo=equipo, fecha=fecha, fase=fase)

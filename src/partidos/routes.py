@@ -14,3 +14,13 @@ def crear_partido():
         return jsonify({"error": str(e)}), 400
 
     return jsonify({"id": nuevo_id}), 201
+
+
+@partidos_bp.route("/partidos", methods=["GET"])
+def get_partidos():
+    equipo = request.args.get("equipo")
+    fecha = request.args.get("fecha")
+    fase = request.args.get("fase")
+
+    partidos = service.get_partidos(equipo=equipo, fecha=fecha, fase=fase)
+    return jsonify(partidos), 200

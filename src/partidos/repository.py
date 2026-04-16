@@ -20,11 +20,27 @@ def crear_partido(equipo_local, equipo_visitante, estadio, ciudad, fecha, fase):
 
     return nuevo_id
 
-def get_partidos():
+def get_partidos(equipo=None, fecha=None, fase=None):
     conn = mysql.connector.connect(**DB_CONFIG)
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
-    sql = """
-        SELECT * FROM usuarios;
-    """
+    sql = "SELECT * FROM partidos WHERE 1=1"
+    params = []
 
+    if equipo:
+        sql += " AND (equipo_local = %s OR equipo_visitante = %s)"
+        params.extend([equipo, equipo])
+    if fecha:
+        sql += " AND DATE(fecha) = %s"
+        params.append(fecha)
+    if fase:
+        sql += " AND fase = %s"
+        params.append(fase)
+
+    cursor.execute(sql, params)
+    partidos = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return partidos
