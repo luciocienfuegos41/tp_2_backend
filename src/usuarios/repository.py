@@ -57,6 +57,7 @@ def actualizar_usuario(id, nombre, email):
         )
         conn.commit()
         return cursor.rowcount
+
     # manejamos el error del email duplicado
     except mysql.connector.errors.IntegrityError:
         return "conflict"
@@ -73,4 +74,3 @@ def eliminar_usuario(id):
     afectadas = cursor.rowcount
     cursor.close()
     conn.close()
-    return afectadas
