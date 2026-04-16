@@ -23,6 +23,27 @@ def get_partidos(equipo=None, fecha=None, fase=None):
     return repository.get_partidos(equipo=equipo, fecha=fecha, fase=fase)
 
 
+def actualizar_resultado(partido_id, data):
+    if data is None:
+        raise ValueError("No se enviaron los datos para actualizar el resultado")
+
+    for campo in ["local", "visitante"]:
+        if campo not in data:
+            raise ValueError(f"El campo '{campo}' es requerido")
+
+    goles_local = data["local"]
+    goles_visitante = data["visitante"]
+
+    if not isinstance(goles_local, int) or not isinstance(goles_visitante, int):
+        raise ValueError("Los goles deben ser valores enteros")
+    if goles_local < 0 or goles_visitante < 0:
+        raise ValueError("Los goles no pueden ser negativos")
+
+    actualizar_resultado = repository.actualizar_resultado(partido_id, goles_local, goles_visitante)
+    if not actualizar_resultado:
+        raise LookupError("Partido no encontrado")
+
+
 def eliminar_partido(partido_id):
     eliminado = repository.eliminar_partido(partido_id)
     if not eliminado:
