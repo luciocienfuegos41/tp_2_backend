@@ -46,6 +46,30 @@ def get_partidos(equipo=None, fecha=None, fase=None):
     return partidos
 
 
+def actualizar_resultado(partido_id, goles_local, goles_visitante):
+    conn = mysql.connector.connect(**DB_CONFIG)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id FROM partidos WHERE id = %s", (partido_id,))
+    if not cursor.fetchone():
+        cursor.close()
+        conn.close()
+        return False
+
+    sql = """
+        UPDATE partidos
+        SET goles_local = %s,
+            goles_visitante = %s
+        WHERE id = %s
+    """
+    cursor.execute(sql, (goles_local, goles_visitante, partido_id))
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+    return True
+
+
 def eliminar_partido(partido_id):
     conn = mysql.connector.connect(**DB_CONFIG)
     cursor = conn.cursor()
@@ -62,3 +86,4 @@ def eliminar_partido(partido_id):
     cursor.close()
     conn.close()
     return True
+
