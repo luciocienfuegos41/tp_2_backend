@@ -26,6 +26,15 @@ def get_partidos():
     return jsonify(partidos), 200
 
 
+@partidos_bp.route("/partidos/<int:partido_id>", methods=["GET"])
+def detalle_partido(partido_id):
+    partido = service.get_partido_by_id(partido_id)
+    
+    if partido is None:
+        return jsonify({"error": "Partido no encontrado"}), 404
+    
+    return jsonify(partido), 200
+
 @partidos_bp.route("/partidos/<int:partido_id>", methods=["DELETE"])
 def eliminar_partido(partido_id):
     try:
