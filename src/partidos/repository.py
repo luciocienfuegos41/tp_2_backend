@@ -45,6 +45,18 @@ def get_partidos(equipo=None, fecha=None, fase=None):
 
     return partidos
 
+def get_partido_by_id(partido_id):
+    conn = mysql.connector.connect(**DB_CONFIG)
+    cursor = conn.cursor(dictionary=True)
+    
+    sql = "SELECT * FROM partidos WHERE id = %s"
+    cursor.execute(sql, (partido_id,))
+    partido = cursor.fetchone()
+    
+    cursor.close()
+    conn.close()
+    return partido
+
 
 def eliminar_partido(partido_id):
     conn = mysql.connector.connect(**DB_CONFIG)
