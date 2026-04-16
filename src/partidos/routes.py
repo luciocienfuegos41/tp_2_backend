@@ -51,6 +51,6 @@ def actualizar_datos(id_partido):
     if not datos_a_actualizar:
         return jsonify({"error": "No se enviaron los datos para actualizar"}), 400
     
-    resultado, status_code = actualizar_partido_parcial(id_partidon datos_a_actualizar)
+    resultado, status_code = actualizar_partido_parcial(id_partido, datos_a_actualizar)
 
     return jsonify(resultado), status_code
