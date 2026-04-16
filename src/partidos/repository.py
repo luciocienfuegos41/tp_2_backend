@@ -20,7 +20,7 @@ def crear_partido(equipo_local, equipo_visitante, estadio, ciudad, fecha, fase):
 
     return nuevo_id
 
-def get_partidos(equipo=None, fecha=None, fase=None):
+def get_partidos(equipo=None, fecha=None, fase=None, limit=10, offset=0):
     conn = mysql.connector.connect(**DB_CONFIG)
     cursor = conn.cursor(dictionary=True)
 
@@ -37,13 +37,33 @@ def get_partidos(equipo=None, fecha=None, fase=None):
         sql += " AND fase = %s"
         params.append(fase)
 
+    count_cursor = conn.cursor()
+    count_cursor.execute("SELECT COUNT(*) FROM (" + sql + ") AS total", params)
+    total = count_cursor.fetchone()[0]
+    count_cursor.close()
+
+    sql += " LIMIT %s OFFSET %s"
+    params.extend([limit, offset])
+
     cursor.execute(sql, params)
     partidos = cursor.fetchall()
 
     cursor.close()
     conn.close()
 
-    return partidos
+    return partidos, total
+
+def get_partido_by_id(partido_id):
+    conn = mysql.connector.connect(**DB_CONFIG)
+    cursor = conn.cursor(dictionary=True)
+    
+    sql = "SELECT * FROM partidos WHERE id = %s"
+    cursor.execute(sql, (partido_id,))
+    partido = cursor.fetchone()
+    
+    cursor.close()
+    conn.close()
+    return partido
 
 
 def actualizar_resultado(partido_id, goles_local, goles_visitante):
@@ -87,3 +107,33 @@ def eliminar_partido(partido_id):
     conn.close()
     return True
 
+def actualizar_partido_parcial(partido_id, campos_a_actualizar):
+
+    conn = mysql.connector.connect(**DB_CONFIG)
+    cursor = conn.cursor()
+
+    set_query = ", ".join([f"{campo} = %s" for campo in campos_a_actualizar.keys()])
+    
+    valores = list(campos_a_actualizar.values())
+    valores.append(partido_id) 
+
+    sql = f"UPDATE partidos SET {set_query} WHERE id = %s"
+
+    try:
+        cursor.execute(sql, valores)
+        conn.commit()
+        
+        filas_afectadas = cursor.rowcount
+        
+        cursor.close()
+        conn.close()
+        
+        return filas_afectadas > 0
+
+    except Exception as e:
+        print(f"Error en PATCH: {e}")
+        conn.rollback()
+        cursor.close()
+        conn.close()
+        return False
+    
