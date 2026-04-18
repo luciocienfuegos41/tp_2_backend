@@ -98,3 +98,25 @@ def actualizar_datos(id_partido):
 
     return jsonify(resultado), status_code
 
+
+@partidos_bp.route('/partidos/<int:partido_id>/prediccion', methods=['POST'])
+def predeccion_partido(partido_id):
+    datos = request.get_json()
+
+    if not datos or datos is None:
+        return jsonify({"error": "No se enviaron datos"}), 400
+    if "local" not in datos or "visitante" not in datos or "id_usuario" not in datos:
+        return jsonify({"Bad Request": "Los campos 'local', 'visitante' y 'partido_id' son requeridos"}), 400
+
+    try:
+        service.predecir_partido(partido_id, datos)
+    except ValueError as e:
+        return jsonify({"Bad Request": str(e)}), 400
+    except LookupError as e:
+        return jsonify({"Not Found": str(e)}), 404
+    except NotImplementedError:
+        return jsonify({"Conflict":"No se puede predecir el mismo partido 2 veces"}), 409
+    except Exception:
+        return jsonify({"Internal Server Error": "Error interno del servidor"}), 500
+    
+    return jsonify({"Created": "La prediccion ha sido creada... Mucha Suerte!!"}), 201
