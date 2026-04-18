@@ -55,3 +55,24 @@ def actualizar_partido_parcial(id_partido, datos):
         return {"mensaje": "Partido actualizado con éxito"}, 200
     else:
         return {"error": "No se pudo actualizar. El partido no existe o hubo un problema en la base de datos"}, 404
+
+def predecir_partido(id_partido, datos):
+    
+    goles_local = datos["local"]
+    goles_visitante = datos["visitante"]
+    id_usuario = datos["id_usuario"]
+
+    if not isinstance(goles_local, int) or not isinstance(goles_visitante, int):
+        raise ValueError("Los goles deben ser valores enteros")
+    if goles_local < 0 or goles_visitante < 0:
+        raise ValueError("Los goles no pueden ser negativos")
+    if not isinstance(id_usuario, int):
+        raise ValueError("La id de usuario es un entero positivo")
+    
+    prediccion = repository.guardar_prediccion(id_partido, id_usuario, goles_local, goles_visitante)
+    if prediccion == 1:
+        raise LookupError("Partido inexistente")
+    elif prediccion == 2:
+        raise LookupError("Usuario inexistente")
+    
+    return True 
