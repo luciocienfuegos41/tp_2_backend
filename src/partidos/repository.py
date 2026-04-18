@@ -76,13 +76,13 @@ def actualizar_resultado(partido_id, goles_local, goles_visitante):
         conn.close()
         return False
 
-    sql = """
+    cursor.execute("""
         UPDATE partidos
         SET goles_local = %s,
             goles_visitante = %s
         WHERE id = %s
-    """
-    cursor.execute(sql, (goles_local, goles_visitante, partido_id))
+    """, 
+    (goles_local, goles_visitante, partido_id))
     conn.commit()
 
     cursor.close()
@@ -137,3 +137,37 @@ def actualizar_partido_parcial(partido_id, campos_a_actualizar):
         conn.close()
         return False
     
+def guardar_prediccion(partido_id, id_usuario, local, visitante):
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+    except mysql.connector.Error:
+        raise Exception
+    cursor = conn.cursor()
+
+
+    cursor.execute("SELECT id FROM partidos WHERE id = %s", (partido_id,))
+    if not cursor.fetchone():
+        cursor.close()
+        conn.close()
+        return 1
+    cursor.execute("SELECT id FROM usuarios WHERE id = %s", (id_usuario,))
+    if not cursor.fetchone():
+        cursor.close()
+        conn.close()
+        return 2
+
+    try:
+        cursor.execute("INSERT INTO prediccion (id_usuario, id_partido, goles_local, goles_visitante) VALUES (%s,%s,%s,%s)", (id_usuario, partido_id, local, visitante))
+        conn.commit()
+    except mysql.connector.IntegrityError:
+        cursor.close()
+        conn.close()
+        raise NotImplementedError
+    
+    cursor.close()
+    conn.close()
+    return True
+    
+
+    
+
