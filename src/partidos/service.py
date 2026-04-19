@@ -49,6 +49,25 @@ def eliminar_partido(partido_id):
     if not eliminado:
         raise ValueError("Partido no encontrado")
 
+def reemplazar_partido(partido_id, data):
+    campos_requeridos = ["equipo_local", "equipo_visitante", "fecha", "fase"]
+    for campo in campos_requeridos:
+        if campo not in data or not data[campo]:
+            raise ValueError(f"El campo '{campo}' es requerido")
+
+    exito = repository.reemplazar_partido(
+        partido_id,
+        equipo_local=data["equipo_local"],
+        equipo_visitante=data["equipo_visitante"],
+        estadio=data.get("estadio"),
+        ciudad=data.get("ciudad"),
+        fecha=data["fecha"],
+        fase=data["fase"]
+    )
+    if not exito:
+        raise LookupError("Partido no encontrado")
+
+
 def actualizar_partido_parcial(id_partido, datos):
     exito = repository.actualizar_partido_parcial(id_partido, datos)
     if exito:

@@ -107,6 +107,28 @@ def eliminar_partido(partido_id):
     conn.close()
     return True
 
+def reemplazar_partido(partido_id, equipo_local, equipo_visitante, estadio, ciudad, fecha, fase):
+    conn = mysql.connector.connect(**DB_CONFIG)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id FROM partidos WHERE id = %s", (partido_id,))
+    if not cursor.fetchone():
+        cursor.close()
+        conn.close()
+        return False
+
+    cursor.execute("""
+        UPDATE partidos
+        SET equipo_local = %s, equipo_visitante = %s, estadio = %s, ciudad = %s, fecha = %s, fase = %s
+        WHERE id = %s
+    """, (equipo_local, equipo_visitante, estadio, ciudad, fecha, fase, partido_id))
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+    return True
+
+
 def actualizar_partido_parcial(partido_id, campos_a_actualizar):
 
     conn = mysql.connector.connect(**DB_CONFIG)

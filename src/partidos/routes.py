@@ -87,6 +87,20 @@ def actualizar_resultado(partido_id):
     return "", 204
 
 
+@partidos_bp.route('/partidos/<int:partido_id>', methods=['PUT'])
+def reemplazar_partido(partido_id):
+    data = request.get_json()
+
+    try:
+        service.reemplazar_partido(partido_id, data)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except LookupError as e:
+        return jsonify({"error": str(e)}), 404
+
+    return jsonify({"mensaje": "Partido actualizado exitosamente"}), 200
+
+
 @partidos_bp.route('/partidos/<int:id_partido>', methods=['PATCH'])
 def actualizar_datos(id_partido):
     datos_a_actualizar = request.get_json()
