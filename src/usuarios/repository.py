@@ -74,3 +74,50 @@ def eliminar_usuario(id):
     afectadas = cursor.rowcount
     cursor.close()
     conn.close()
+
+
+def get_ranking(limit, offset):
+    """
+    Calcula el ranking de usuarios basado en sus predicciones correctas.
+    - 3 puntos: resultado exacto
+    - 1 punto: ganador correcto
+    - 0 puntos: falló
+    """
+    conn = mysql.connector.connect(**DB_CONFIG)
+    cursor = conn.cursor(dictionary=True)
+
+    # SQL que calcula los puntos de cada usuario
+    sql = """
+    SELECT 
+        u.id as id_usuario,
+        u.nombre,
+        SUM(
+            CASE 
+                WHEN p.goles_local = pa.goles_local AND p.goles_visitante = pa.goles_visitante THEN 3
+                WHEN (
+                    (p.goles_local > p.goles_visitante AND pa.goles_local > pa.goles_visitante) OR
+                    (p.goles_local < p.goles_visitante AND pa.goles_local < pa.goles_visitante) OR
+                    (p.goles_local = p.goles_visitante AND pa.goles_local = pa.goles_visitante)
+                ) THEN 1
+                ELSE 0
+            END
+        ) as puntos
+    FROM usuarios u
+    LEFT JOIN prediccion p ON u.id = p.id_usuario
+    LEFT JOIN partidos pa ON p.id_partido = pa.id
+    WHERE pa.goles_local IS NOT NULL AND pa.goles_visitante IS NOT NULL
+    GROUP BY u.id, u.nombre
+    ORDER BY puntos DESC
+    """
+
+    cursor.execute(sql)
+    ranking = cursor.fetchall()
+
+    # Contar total de usuarios para links
+    cursor.execute("SELECT COUNT(*) as total FROM usuarios")
+    total = cursor.fetchone()["total"]
+
+    cursor.close()
+    conn.close()
+
+    return ranking, total

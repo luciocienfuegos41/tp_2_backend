@@ -109,3 +109,4 @@ def delete_usuario(id):
 
     service.eliminar_usuario(id)
     return "", 204
+

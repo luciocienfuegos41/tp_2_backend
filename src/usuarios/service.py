@@ -19,3 +19,7 @@ def actualizar_usuario(id, nombre, email):
 
 def eliminar_usuario(id):
     return repository.eliminar_usuario(id)
+
+
+def get_ranking(limit, offset):
+    return repository.get_ranking(limit, offset)
