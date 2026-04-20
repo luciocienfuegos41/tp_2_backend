@@ -1,9 +1,10 @@
 DB_CONFIG = {
     "host": "localhost",
     "port": 3306,
-    "user": "root",
-    "password": "",
+    "user": "tp_user",
+    "password": "1234",
     "database": "mundial2026",
+    "unix_socket": "/var/run/mysqld/mysqld.sock",
 }
 
 
